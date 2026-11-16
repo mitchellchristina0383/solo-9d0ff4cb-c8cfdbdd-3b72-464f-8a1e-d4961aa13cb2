@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}园区总表用量发布平台{% endblock %}</title>
+<style>
+  :root { --blue:#1f5fbf; --bg:#f4f6fa; --line:#d9dee8; --ok:#1a7f4b; --err:#b42318; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+         background:var(--bg); color:#1c2430; }
+  header { background:var(--blue); color:#fff; padding:14px 28px; display:flex;
+           align-items:center; gap:24px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; }
+  header nav a { color:#dbe7ff; text-decoration:none; margin-right:16px; font-size:14px; }
+  header nav a:hover { color:#fff; text-decoration:underline; }
+  main { max-width:1080px; margin:24px auto; padding:0 20px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px;
+          padding:20px 24px; margin-bottom:20px; }
+  h2 { margin-top:0; font-size:17px; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  th, td { border:1px solid var(--line); padding:7px 10px; text-align:left; }
+  th { background:#eef2f8; }
+  tr:nth-child(even) td { background:#fafbfd; }
+  .btn { display:inline-block; background:var(--blue); color:#fff; border:0;
+         border-radius:7px; padding:9px 20px; font-size:14px; cursor:pointer;
+         text-decoration:none; }
+  .btn.secondary { background:#5b6b84; }
+  .flash-ok { background:#e7f6ee; border:1px solid #9ed8b8; color:var(--ok);
+              padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:14px; }
+  .flash-err { background:#fdecea; border:1px solid #f3b4ad; color:var(--err);
+               padding:10px 14px; border-radius:8px; margin-bottom:16px; font-size:14px;
+               white-space:pre-wrap; }
+  .stats { display:flex; gap:14px; flex-wrap:wrap; }
+  .stat { flex:1; min-width:140px; background:#fff; border:1px solid var(--line);
+          border-radius:10px; padding:16px; text-align:center; }
+  .stat .num { font-size:26px; font-weight:700; color:var(--blue); }
+  .stat .label { font-size:13px; color:#5b6b84; margin-top:4px; }
+  input[type=month], input[type=file] { padding:8px; border:1px solid var(--line);
+          border-radius:7px; font-size:14px; }
+  code { background:#eef2f8; padding:1px 5px; border-radius:4px; font-size:12px; }
+  .muted { color:#7a8699; font-size:12px; }
+  .pill { display:inline-block; padding:2px 9px; border-radius:99px; font-size:12px; }
+  .pill.ok { background:#e7f6ee; color:var(--ok); }
+  .pill.bad { background:#fdecea; color:var(--err); }
+</style>
+</head>
+<body>
+<header>
+  <h1>园区总表用量发布平台</h1>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/upload">CSV 上传</a>
+    <a href="/readings">当前读数</a>
+    <a href="/publish">两月发布</a>
+    <a href="/versions">历史版本</a>
+  </nav>
+</header>
+<main>
+  {% block flashes %}{% endblock %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

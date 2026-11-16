@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}CSV 上传 - 园区总表用量发布平台{% endblock %}
+{% block flashes %}
+  {% if request.query_params.get('ok') %}
+  <div class="flash-ok">上传成功：新入库 {{ request.query_params.get('inserted') }} 条，
+    同刻同内容重传跳过 {{ request.query_params.get('skipped') }} 条。</div>
+  {% elif request.query_params.get('err') %}
+  <div class="flash-err">整批拒收，读数未发生任何变化。原因：{{ request.query_params.get('msg') }}</div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>上传总表累计读数 CSV</h2>
+  <p class="muted">
+    CSV 需为 UTF-8 编码，表头必须包含 UTC 时间、表计周期号、累计 kWh 三列
+    （支持表头：<code>ts/utc_time</code>、<code>period_no</code>、<code>cumulative_kwh</code> 等）。
+    时间需带时区（如 <code>2026-01-01T00:00:00Z</code>），统一按 UTC 处理。
+  </p>
+  <ul class="muted">
+    <li>同刻同内容重传 → 幂等跳过，不重复入库；</li>
+    <li>同刻异内容、同周期读数倒退 → 整批拒收，库内读数不变；</li>
+    <li>换表（周期号变化）相邻读数不计算差额，不估算用量。</li>
+  </ul>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".csv" required>
+    <button class="btn" type="submit">上传</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>上传批次记录（最近 20 条）</h2>
+  <table>
+    <tr><th>#</th><th>文件</th><th>状态</th><th>入库</th><th>跳过</th><th>说明</th><th>时间</th></tr>
+    {% for b in batches %}
+    <tr>
+      <td>{{ b.id }}</td><td>{{ b.filename }}</td>
+      <td>{% if b.status == 'accepted' %}<span class="pill ok">接受</span>
+          {% else %}<span class="pill bad">拒收</span>{% endif %}</td>
+      <td>{{ b.inserted_cnt }}</td><td>{{ b.skipped_cnt }}</td>
+      <td>{{ b.message }}</td><td class="muted">{{ b.created_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">还没有上传记录。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

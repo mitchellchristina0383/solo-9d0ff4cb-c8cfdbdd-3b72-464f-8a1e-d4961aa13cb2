@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}历史版本 - 园区总表用量发布平台{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>全部发布版本（旧版永久保留）</h2>
+  <p class="muted">当前读数状态指纹：<code>{{ current_hash }}</code>。
+    版本指纹与当前一致表示该版本基于最新读数；不一致说明发布后又有补传。</p>
+  <table>
+    <tr><th>版本</th><th>区间（UTC 月）</th><th>状态指纹</th><th>发布时间</th>
+        <th>指纹匹配当前读数</th><th>操作</th></tr>
+    {% for v in versions %}
+    <tr>
+      <td>#{{ v.id }}</td><td>{{ v.month1 }} ~ {{ v.month2 }}</td>
+      <td><code>{{ v.state_hash[:16] }}…</code></td>
+      <td class="muted">{{ v.created_at }}</td>
+      <td>{% if v.state_hash == current_hash %}<span class="pill ok">一致</span>
+          {% else %}<span class="pill bad">已被后续补传超越</span>{% endif %}</td>
+      <td><a href="/versions/{{ v.id }}">查看 / 下载</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">尚无发布版本。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

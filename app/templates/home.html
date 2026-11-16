@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>概览</h2>
+  <div class="stats">
+    <div class="stat"><div class="num">{{ stats.readings }}</div><div class="label">已提交读数</div></div>
+    <div class="stat"><div class="num">{{ stats.batches }}</div><div class="label">上传批次</div></div>
+    <div class="stat"><div class="num">{{ stats.rejected }}</div><div class="label">拒收批次</div></div>
+    <div class="stat"><div class="num">{{ stats.versions }}</div><div class="label">已发布版本</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>最新发布版本</h2>
+  {% if latest %}
+  <p>版本 <strong>#{{ latest.id }}</strong>：区间 {{ latest.month1 }} ~ {{ latest.month2 }}
+     （UTC 月），发布于 {{ latest.created_at }}。
+     <a class="btn secondary" href="/versions/{{ latest.id }}">查看 / 下载</a></p>
+  <p class="muted">读数状态指纹：<code>{{ latest.state_hash[:16] }}…</code></p>
+  {% else %}
+  <p class="muted">尚无发布版本，请到「两月发布」生成。</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>最近上传批次</h2>
+  <table>
+    <tr><th>#</th><th>文件</th><th>状态</th><th>入库</th><th>跳过重复</th><th>说明</th><th>时间</th></tr>
+    {% for b in recent_batches %}
+    <tr>
+      <td>{{ b.id }}</td><td>{{ b.filename }}</td>
+      <td>{% if b.status == 'accepted' %}<span class="pill ok">接受</span>
+          {% else %}<span class="pill bad">拒收</span>{% endif %}</td>
+      <td>{{ b.inserted_cnt }}</td><td>{{ b.skipped_cnt }}</td>
+      <td>{{ b.message }}</td><td class="muted">{{ b.created_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">还没有上传记录。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

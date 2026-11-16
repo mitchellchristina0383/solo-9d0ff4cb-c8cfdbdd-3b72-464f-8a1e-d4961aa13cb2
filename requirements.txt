@@ -1,0 +1,5 @@
+# 运行时依赖（版本已在本机完整自测通过）
+fastapi==0.163.1
+uvicorn[standard]==0.54.0
+jinja2==3.1.6
+python-multipart==0.0.34

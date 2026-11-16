@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}两月发布 - 园区总表用量发布平台{% endblock %}
+{% block content %}
+{% if error %}<div class="flash-err">发布失败，未产生新版本。原因：{{ error }}</div>{% endif %}
+<div class="card">
+  <h2>发布相邻两个 UTC 月的区间明细与月合计</h2>
+  <p class="muted">
+    选择相邻的两个自然月（UTC）。系统会基于<strong>当前全部已提交读数</strong>生成一个不可变新版本，
+    包含区间用量明细与两个月合计；历史版本始终保留、可下载。月界附近的迟到读数可能同时影响两个月，
+    新版本中的两个月保证来自同一读数状态（由状态指纹锁定）。
+  </p>
+  <form action="/publish" method="post">
+    <label>起始月 <input type="month" name="month1" value="{{ month1 or '' }}" required></label>
+    <label>相邻下一自然月 <input type="month" name="month2" value="{{ month2 or '' }}" required></label>
+    <button class="btn" type="submit">发布新版本</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>最近发布版本</h2>
+  <table>
+    <tr><th>版本</th><th>区间（UTC 月）</th><th>状态指纹</th><th>发布时间</th><th>操作</th></tr>
+    {% for v in versions %}
+    <tr>
+      <td>#{{ v.id }}</td><td>{{ v.month1 }} ~ {{ v.month2 }}</td>
+      <td><code>{{ v.state_hash[:16] }}…</code></td>
+      <td class="muted">{{ v.created_at }}</td>
+      <td><a href="/versions/{{ v.id }}">查看 / 下载</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">尚无发布版本。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

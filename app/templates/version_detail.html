@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}版本 #{{ version.id }} - 园区总表用量发布平台{% endblock %}
+{% block flashes %}
+  {% if request.query_params.get('published') %}
+  <div class="flash-ok">版本 #{{ version.id }} 发布成功：区间 {{ version.month1 }} ~ {{ version.month2 }}，
+    明细与月合计已在同一事务落库。</div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>版本 #{{ version.id }}：{{ version.month1 }} ~ {{ version.month2 }}（UTC 月）</h2>
+  <p class="muted">发布时间：{{ version.created_at }} ｜ 读数状态指纹：<code>{{ version.state_hash }}</code>
+    {% if version.state_hash != current_hash %}
+    <br><strong>注意：</strong>该指纹与当前读数不一致，说明发布后又有补传；本版本内容保持不变，可重新发布生成新版本。
+    {% endif %}
+  </p>
+  <p>
+    <a class="btn" href="/versions/{{ version.id }}/details.csv">下载明细 CSV</a>
+    <a class="btn secondary" href="/versions/{{ version.id }}/totals.csv">下载月合计 CSV</a>
+    <a class="btn secondary" href="/versions">返回版本列表</a>
+  </p>
+</div>
+
+<div class="card">
+  <h2>月合计</h2>
+  <table>
+    <tr><th>用量月份 (UTC)</th><th>合计 kWh</th></tr>
+    {% for t in totals %}
+    <tr><td>{{ t.usage_month }}</td><td>{{ t.total_kwh }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h2>区间用量明细</h2>
+  <table>
+    <tr><th>用量月份</th><th>起 (UTC)</th><th>止 (UTC)</th><th>周期号</th>
+        <th>起累计 kWh</th><th>止累计 kWh</th><th>用量 kWh</th></tr>
+    {% for d in details %}
+    <tr>
+      <td>{{ d.usage_month }}</td><td>{{ d.start_ts }}</td><td>{{ d.end_ts }}</td>
+      <td>{{ d.period_no }}</td><td>{{ d.start_cumulative }}</td>
+      <td>{{ d.end_cumulative }}</td><td>{{ d.usage_kwh }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">该区间内没有可计算的同周期相邻差额。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

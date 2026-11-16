@@ -1,0 +1,20 @@
+services:
+  web:
+    build: .
+    image: energy-meter-usage:latest
+    container_name: energy-meter-usage
+    ports:
+      - "8000:8000"
+    volumes:
+      - energy_data:/data
+    environment:
+      ENERGY_DB_PATH: /data/energy.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  energy_data:

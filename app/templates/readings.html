@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}当前读数 - 园区总表用量发布平台{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>当前已提交读数（共 {{ rows|length }} 条）</h2>
+  <p class="muted">当前读数状态指纹：<code>{{ state_hash }}</code>
+    （每次发布都会固化当时的指纹，用于核对版本基于哪一读数状态）</p>
+  <table>
+    <tr><th>UTC 时间</th><th>周期号</th><th>累计 kWh</th><th>来源批次</th><th>入库时间</th></tr>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.ts }}</td><td>{{ r.period_no }}</td>
+      <td>{{ r.cumulative }}</td><td>#{{ r.batch_id }}（{{ r.filename }}）</td>
+      <td class="muted">{{ r.created_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">暂无读数，请先上传 CSV。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div class="card">
+  <h2>当前状态下的相邻同周期用量差额（预览，未发布）</h2>
+  <p class="muted">仅相邻两次读数周期号相同才产生差额，归入后笔所在 UTC 月；跨周期不估算。</p>
+  <table>
+    <tr><th>用量月份</th><th>起 (UTC)</th><th>止 (UTC)</th><th>周期号</th>
+        <th>起累计</th><th>止累计</th><th>用量 kWh</th></tr>
+    {% for iv in intervals %}
+    <tr>
+      <td>{{ iv.usage_month }}</td><td>{{ iv.start_ts }}</td><td>{{ iv.end_ts }}</td>
+      <td>{{ iv.period_no }}</td><td>{{ iv.start_cumulative }}</td>
+      <td>{{ iv.end_cumulative }}</td><td>{{ iv.usage_kwh }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">暂无可计算差额（读数不足或全部跨周期）。</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
